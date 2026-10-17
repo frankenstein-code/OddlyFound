@@ -1,0 +1,84 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import ProductCard from "../../components/ProductCard.astro";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import site from "../../data/site.json";
+
+export async function getStaticPaths() {
+  const [articles, categories] = await Promise.all([
+    getCollection("articles", ({ data }) => !data.draft),
+    getCollection("categories", ({ data }) => !data.draft),
+  ]);
+  const categoryIds = new Set(categories.map((category) => category.id));
+  return articles
+    .filter((article) => article.data.categories.every((category) => categoryIds.has(category.id)))
+    .map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const [productEntries, categoryEntries] = await Promise.all([
+  Promise.all(article.data.relatedProducts.map((reference) => getEntry(reference))),
+  getCollection("categories", ({ data }) => !data.draft),
+]);
+const categoryNames = new Map(categoryEntries.map((category) => [category.id, category.data.name]));
+const publicCategoryIds = new Set(categoryEntries.map((category) => category.id));
+const products = productEntries.filter(
+  (product) => product && !product.data.draft && publicCategoryIds.has(product.data.category.id),
+);
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: article.data.title,
+  description: article.data.description,
+  datePublished: article.data.publishedAt.toISOString(),
+  ...(article.data.updatedAt ? { dateModified: article.data.updatedAt.toISOString() } : {}),
+  author: { "@type": "Person", name: article.data.author },
+  mainEntityOfPage: new URL(`/articles/${article.id}/`, site.url).toString(),
+  ...(article.data.image ? { image: new URL(article.data.image, site.url).toString() } : {}),
+};
+---
+
+<SiteLayout
+  title={article.data.seoTitle ?? article.data.title}
+  description={article.data.seoDescription ?? article.data.description}
+  socialImage={article.data.image}
+  jsonLd={articleSchema}
+>
+  <nav aria-label="Breadcrumb" class="mb-6 text-sm">
+    <a href="/articles/">Stories</a> <span aria-hidden="true">/</span> {article.data.title}
+  </nav>
+  <article class="mx-auto max-w-4xl">
+    <header class="mb-8 max-w-3xl">
+      <p class="category-eyebrow font-bold uppercase tracking-wide">
+        {article.data.categories.map((category) => categoryNames.get(category.id)).filter(Boolean).join(" · ")}
+      </p>
+      <h1 class="mt-2 text-5xl font-black tracking-tight">{article.data.title}</h1>
+      <p class="mt-4 text-xl text-muted">{article.data.description}</p>
+      <p class="mt-4 text-sm text-muted">
+        By {article.data.author} · <time datetime={article.data.publishedAt.toISOString()}>
+          {article.data.publishedAt.toLocaleDateString("en-IN", { dateStyle: "long" })}
+        </time>
+      </p>
+    </header>
+    {article.data.image && (
+      <img
+        class="mb-8 aspect-[16/9] max-h-[36rem] w-full rounded-2xl object-cover"
+        src={article.data.image}
+        alt={article.data.imageAlt ?? ""}
+        decoding="async"
+      />
+    )}
+    <div class="prose-content"><Content /></div>
+  </article>
+  {products.length > 0 && (
+    <section class="mt-12" aria-labelledby="related-finds">
+      <h2 id="related-finds" class="mb-5 text-2xl font-bold">Related finds</h2>
+      <ul class="grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => (
+          <ProductCard product={product} categoryName={categoryNames.get(product.data.category.id) ?? "Find"} />
+        ))}
+      </ul>
+    </section>
+  )}
+</SiteLayout>

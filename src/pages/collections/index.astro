@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const collections = await getCollection("collections", ({ data }) => !data.draft);
+---
+
+<SiteLayout title="Collections" description="Browse curated collections of interesting finds.">
+  <header class="mb-8">
+    <p class="category-eyebrow font-bold uppercase tracking-wide">Hand-picked themes</p>
+    <h1 class="mt-2 text-5xl font-black tracking-tight">Collections</h1>
+  </header>
+  {collections.length ? (
+    <ul class="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+      {collections.map((collection) => (
+        <li class="discovery-card p-5">
+          <h2 class="text-xl font-bold">
+            <a href={`/collections/${collection.id}/`}>{collection.data.title}</a>
+          </h2>
+          <p class="mt-2 text-muted">{collection.data.description}</p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="empty-state">
+      Curated collections will appear here as they are published.
+    </p>
+  )}
+</SiteLayout>

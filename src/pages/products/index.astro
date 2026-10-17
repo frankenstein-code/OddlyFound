@@ -1,0 +1,72 @@
+---
+import { getCollection } from "astro:content";
+import ProductCard from "../../components/ProductCard.astro";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const [allProducts, categories] = await Promise.all([
+  getCollection("products", ({ data }) => !data.draft),
+  getCollection("categories", ({ data }) => !data.draft),
+]);
+const categoryNames = new Map(categories.map((category) => [category.id, category.data.name]));
+const products = allProducts.filter((product) => categoryNames.has(product.data.category.id));
+---
+
+<SiteLayout title="All finds" description="Browse interesting gadgets and useful everyday discoveries.">
+  <header class="mb-8 max-w-3xl">
+    <p class="category-eyebrow font-bold uppercase tracking-wide">The discovery shelf</p>
+    <h1 class="mt-2 text-5xl font-black tracking-tight">All finds</h1>
+    <p class="mt-3 text-lg text-muted">Browse curious gadgets, useful things, and more.</p>
+  </header>
+
+  <section aria-label="Filter finds">
+    <form
+      class="form-surface mb-6 grid gap-4 rounded-2xl border p-5 sm:grid-cols-[minmax(0,1fr)_16rem]"
+      data-discovery-form
+      data-list-id="product-list"
+    >
+      <div>
+        <label class="mb-1 block font-semibold" for="product-search">Search finds</label>
+        <input
+          class="field-control w-full rounded-xl border px-3 py-3"
+          id="product-search"
+          type="search"
+          data-search-input
+          autocomplete="off"
+        />
+      </div>
+      <div>
+        <label class="mb-1 block font-semibold" for="product-category">Filter by category</label>
+        <select class="field-control w-full rounded-xl border px-3 py-3" id="product-category" data-category-select>
+          <option value="">All categories</option>
+          {categories.map((category) => <option value={category.id}>{category.data.name}</option>)}
+        </select>
+      </div>
+      <p class="text-sm text-muted sm:col-span-2" aria-live="polite" data-results-count>
+        {products.length} {products.length === 1 ? "result" : "results"}
+      </p>
+    </form>
+
+    {products.length ? (
+      <ul id="product-list" class="grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => (
+          <ProductCard product={product} categoryName={categoryNames.get(product.data.category.id) ?? "Find"} />
+        ))}
+      </ul>
+    ) : (
+      <ul id="product-list" class="list-none p-0">
+        <li class="empty-state">
+          No finds have been published yet.
+        </li>
+      </ul>
+    )}
+    {products.length > 0 && <p
+      class="empty-state mt-5"
+      role="status"
+      data-no-results
+      hidden
+    >No matching finds. Try another search or category.</p>}
+  </section>
+</SiteLayout>
+<script>
+  import "../../scripts/discovery";
+</script>

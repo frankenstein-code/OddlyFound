@@ -1,0 +1,119 @@
+---
+import { getCollection } from "astro:content";
+import ProductCard from "../components/ProductCard.astro";
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const [products, collections, articles, categories] = await Promise.all([
+  getCollection("products", ({ data }) => !data.draft),
+  getCollection("collections", ({ data }) => !data.draft && data.featured),
+  getCollection("articles", ({ data }) => !data.draft),
+  getCollection("categories", ({ data }) => !data.draft),
+]);
+const categoryNames = new Map(categories.map((category) => [category.id, category.data.name]));
+const categoryIds = new Set(categories.map((category) => category.id));
+const featuredProducts = products
+  .filter((product) => product.data.featured && categoryNames.has(product.data.category.id))
+  .slice(0, 6);
+const recentArticles = articles
+  .filter((article) => article.data.categories.every((category) => categoryIds.has(category.id)))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
+  .slice(0, 3);
+---
+
+<SiteLayout title="Curious finds for everyday life">
+  <section class="hero-panel grid items-center gap-4 rounded-[2rem] px-6 py-9 text-ink sm:px-10 sm:py-12 lg:grid-cols-[1.2fr_0.8fr] lg:px-14">
+    <div class="hero-copy">
+      <p class="category-eyebrow mb-4 inline-flex rounded-full bg-magenta-soft px-4 py-2 text-sm font-extrabold uppercase tracking-[0.15em]">
+        OddlyFound
+      </p>
+      <h1 class="max-w-3xl text-4xl font-black leading-[1.04] tracking-tight sm:text-6xl">
+        Not looking for anything? <span class="hero-highlight">You might find something here.</span>
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg text-muted">
+        A home for interesting gadgets, useful everyday things, and unexpected discoveries.
+      </p>
+      <a class="action-link mt-8" href="/products/">Explore the finds <span aria-hidden="true" class="ml-2">↗</span></a>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="hero-art__sun"></div>
+      <div class="hero-art__tile"></div>
+      <div class="hero-art__spark"></div>
+    </div>
+  </section>
+
+  <section class="mt-14" aria-labelledby="featured-heading">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="category-eyebrow font-bold uppercase tracking-wide">Worth a look</p>
+        <h2 id="featured-heading" class="mt-1 text-3xl font-black tracking-tight">Featured finds</h2>
+      </div>
+      <a class="font-bold" href="/products/">Browse all finds <span aria-hidden="true">↗</span></a>
+    </div>
+    {featuredProducts.length ? (
+      <ul class="grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {featuredProducts.map((product) => (
+          <ProductCard product={product} categoryName={categoryNames.get(product.data.category.id) ?? "Find"} />
+        ))}
+      </ul>
+    ) : (
+      <p class="empty-state">
+        New finds are being gathered. Check back soon.
+      </p>
+    )}
+  </section>
+
+  <section class="mt-14" aria-labelledby="collections-heading">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="category-eyebrow font-bold uppercase tracking-wide">Explore by theme</p>
+        <h2 id="collections-heading" class="mt-1 text-3xl font-black tracking-tight">Featured collections</h2>
+      </div>
+      <a class="font-bold" href="/collections/">View collections <span aria-hidden="true">↗</span></a>
+    </div>
+    {collections.length ? (
+      <ul class="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {collections.map((collection) => (
+          <li class="discovery-card p-5">
+            <h3 class="text-xl font-bold">
+              <a href={`/collections/${collection.id}/`}>{collection.data.title}</a>
+            </h3>
+            <p class="mt-2 text-muted">{collection.data.description}</p>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="empty-state">
+        Curated collections will appear here as they are published.
+      </p>
+    )}
+  </section>
+
+  <section class="mt-14" aria-labelledby="stories-heading">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="category-eyebrow font-bold uppercase tracking-wide">Ideas and insights</p>
+        <h2 id="stories-heading" class="mt-1 text-3xl font-black tracking-tight">From the journal</h2>
+      </div>
+      <a class="font-bold" href="/articles/">Read all stories <span aria-hidden="true">↗</span></a>
+    </div>
+    {recentArticles.length ? (
+      <ul class="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {recentArticles.map((article) => (
+          <li class="discovery-card p-5">
+            <h3 class="text-xl font-bold">
+              <a href={`/articles/${article.id}/`}>{article.data.title}</a>
+            </h3>
+            <p class="mt-2 text-muted">{article.data.description}</p>
+            <time class="mt-4 block text-sm text-muted" datetime={article.data.publishedAt.toISOString()}>
+              {article.data.publishedAt.toLocaleDateString("en-IN", { dateStyle: "long" })}
+            </time>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="empty-state">
+        Editorial stories will appear here when ready.
+      </p>
+    )}
+  </section>
+</SiteLayout>

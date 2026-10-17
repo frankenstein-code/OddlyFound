@@ -1,0 +1,53 @@
+---
+import { getCollection } from "astro:content";
+import ProductCard from "../../components/ProductCard.astro";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+export async function getStaticPaths() {
+  const categories = await getCollection("categories", ({ data }) => !data.draft);
+  return categories.map((category) => ({ params: { slug: category.id }, props: { category } }));
+}
+
+const { category } = Astro.props;
+const [allProducts, articles] = await Promise.all([
+  getCollection("products", ({ data }) => !data.draft),
+  getCollection("articles", ({ data }) => !data.draft),
+]);
+const products = allProducts.filter((product) => product.data.category.id === category.id);
+const relatedArticles = articles.filter((article) =>
+  article.data.categories.some((articleCategory) => articleCategory.id === category.id),
+);
+---
+
+<SiteLayout title={category.data.name} description={category.data.description}>
+  <nav aria-label="Breadcrumb" class="mb-6 text-sm">
+    <a href="/categories/">Categories</a> <span aria-hidden="true">/</span> {category.data.name}
+  </nav>
+  <header class="mb-8 max-w-3xl">
+    <p class="category-eyebrow font-bold uppercase tracking-wide">Category</p>
+    <h1 class="mt-2 text-5xl font-black tracking-tight">{category.data.name}</h1>
+    <p class="mt-3 text-lg text-muted">{category.data.description}</p>
+  </header>
+  <section aria-labelledby="category-finds">
+    <h2 id="category-finds" class="mb-5 text-2xl font-bold">Finds in this category</h2>
+    {products.length ? (
+      <ul class="grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => <ProductCard product={product} categoryName={category.data.name} />)}
+      </ul>
+    ) : (
+      <p class="empty-state">
+        No finds have been published in this category yet.
+      </p>
+    )}
+  </section>
+  {relatedArticles.length > 0 && (
+    <section class="mt-12" aria-labelledby="category-stories">
+      <h2 id="category-stories" class="mb-5 text-2xl font-bold">Related stories</h2>
+      <ul class="list-disc space-y-2 pl-6">
+        {relatedArticles.map((article) => (
+          <li><a href={`/articles/${article.id}/`}>{article.data.title}</a></li>
+        ))}
+      </ul>
+    </section>
+  )}
+</SiteLayout>

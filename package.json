@@ -1,0 +1,27 @@
+{
+  "name": "oddlyfound",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "test": "node --experimental-strip-types --test",
+    "build": "astro build"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.0",
+    "decap-cms-app": "^3.17.1",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3",
+    "yaml": "^2.9.1"
+  }
+}

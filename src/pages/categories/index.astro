@@ -1,0 +1,27 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const categories = await getCollection("categories", ({ data }) => !data.draft);
+---
+
+<SiteLayout title="Categories" description="Explore OddlyFound by category.">
+  <header class="mb-8">
+    <p class="category-eyebrow font-bold uppercase tracking-wide">Browse by interest</p>
+    <h1 class="mt-2 text-5xl font-black tracking-tight">Categories</h1>
+  </header>
+  {categories.length ? (
+    <ul class="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+      {categories.map((category) => (
+        <li class="discovery-card p-5">
+          <h2 class="text-xl font-bold"><a href={`/categories/${category.id}/`}>{category.data.name}</a></h2>
+          <p class="mt-2 text-muted">{category.data.description}</p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="empty-state">
+      Categories will appear here as finds are published.
+    </p>
+  )}
+</SiteLayout>

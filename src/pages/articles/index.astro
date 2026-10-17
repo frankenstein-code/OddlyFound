@@ -1,0 +1,83 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const [articles, categories] = await Promise.all([
+  getCollection("articles", ({ data }) => !data.draft),
+  getCollection("categories", ({ data }) => !data.draft),
+]);
+const categoryNames = new Map(categories.map((category) => [category.id, category.data.name]));
+const categoryIds = new Set(categories.map((category) => category.id));
+const publishedArticles = articles
+  .filter((article) => article.data.categories.every((category) => categoryIds.has(category.id)))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+
+<SiteLayout title="Stories" description="Guides, comparisons, and ideas from OddlyFound.">
+  <header class="mb-8 max-w-3xl">
+    <p class="category-eyebrow font-bold uppercase tracking-wide">The journal</p>
+    <h1 class="mt-2 text-5xl font-black tracking-tight">Stories and guides</h1>
+    <p class="mt-3 text-lg text-muted">Useful context and thoughtful recommendations for curious people.</p>
+  </header>
+  <form
+    class="form-surface mb-6 grid gap-4 rounded-2xl border p-5 sm:grid-cols-[minmax(0,1fr)_16rem]"
+    data-discovery-form
+    data-list-id="article-list"
+  >
+    <div>
+      <label class="mb-1 block font-semibold" for="article-search">Search stories</label>
+      <input class="field-control w-full rounded-xl border px-3 py-3" id="article-search" type="search" data-search-input autocomplete="off" />
+    </div>
+    <div>
+      <label class="mb-1 block font-semibold" for="article-category">Filter by category</label>
+      <select class="field-control w-full rounded-xl border px-3 py-3" id="article-category" data-category-select>
+        <option value="">All categories</option>
+        {categories.map((category) => <option value={category.id}>{category.data.name}</option>)}
+      </select>
+    </div>
+    <p class="text-sm text-muted sm:col-span-2" aria-live="polite" data-results-count>
+      {publishedArticles.length} {publishedArticles.length === 1 ? "result" : "results"}
+    </p>
+  </form>
+  {publishedArticles.length ? (
+    <ul id="article-list" class="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+      {publishedArticles.map((article) => (
+        <li
+          class="discovery-card p-5"
+          data-discovery-item
+          data-search-text={[
+            article.data.title,
+            article.data.description,
+            ...article.data.tags,
+            ...article.data.categories.map((category) => categoryNames.get(category.id) ?? ""),
+          ].join(" ")}
+          data-category={article.data.categories.map((category) => category.id).join("|")}
+        >
+          <h2 class="text-xl font-bold"><a href={`/articles/${article.id}/`}>{article.data.title}</a></h2>
+          <p class="mt-2 text-muted">{article.data.description}</p>
+          <p class="mt-3 text-sm text-muted">
+            {article.data.categories.map((category) => categoryNames.get(category.id)).filter(Boolean).join(" · ")}
+          </p>
+          <time class="mt-3 block text-sm text-muted" datetime={article.data.publishedAt.toISOString()}>
+            {article.data.publishedAt.toLocaleDateString("en-IN", { dateStyle: "long" })}
+          </time>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <ul id="article-list" class="list-none p-0">
+      <li class="empty-state">
+        No stories have been published yet.
+      </li>
+    </ul>
+  )}
+  {publishedArticles.length > 0 && <p
+    class="empty-state mt-5"
+    role="status"
+    data-no-results
+    hidden
+  >No matching stories. Try another search or category.</p>}
+</SiteLayout>
+<script>
+  import "../../scripts/discovery";
+</script>

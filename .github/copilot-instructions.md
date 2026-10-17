@@ -1,32 +1,49 @@
-# OddlyFound — Repository Instructions
+We are starting development of OddlyFound. Follow the repository instructions and OddlyFound Copilot Orchestrator.
 
-## Project context
-OddlyFound (`oddlyfound.in`) is a product-discovery, affiliate-marketing, and editorial website. Its positioning is curious, useful, unusual finds—not a generic catalogue. Current proposed stack: Astro, TypeScript, Tailwind CSS, Decap CMS, GitHub, and Cloudflare Pages, with static generation and no database initially. Confirm the actual repository and approved requirements before assuming this stack is already installed.
+## Step 1 — Initialize
 
-## Mandatory first action: Caveman
-At the beginning of every task, before task-specific analysis, inspection, tool calls, or delegation, load and apply `.github/skills/caveman/SKILL.md`. If unavailable, disclose this and apply its principles manually; do not claim it was loaded.
+1. Load `.github/skills/caveman/SKILL.md` first.
+2. Read `.github/copilot-instructions.md` and `.github/agents/orchestrator.agent.md`.
+3. Verify that the referenced agents, skills, and requirements document exist.
+4. Inspect the repository and current project state. Do not assume the proposed tech stack is already installed.
 
-Caveman is the global execution policy: concise output, minimal tool calls and file reads, inspect only relevant files, reuse existing patterns, smallest complete solution, and no unnecessary dependencies or abstractions. It never overrides security, approved scope, or required approval gates.
+## Step 2 — Ask me to choose a workflow mode
 
-## Approval-gated implementation
-For implementation work:
-1. Stage 1: clarify and specify requirements. Do not modify application code.
-2. Gate A: obtain explicit approval of the exact requirements specification.
-3. Stage 2: prepare a complete plan and requirement traceability. Do not modify application code.
-4. Gate B: obtain explicit approval of the exact implementation plan.
-5. Only then implement the approved plan.
-6. Test, independently review the actual diff, and audit requirements traceability.
+**Before beginning requirements analysis or making any changes, ask me this single question:**
 
-If a material requirement or plan changes, pause, explain the change and impact, update the relevant artifact, and obtain renewed approval. Instructions alone are not a technical execution lock; use supported hooks/permissions if hard enforcement is required.
+"How would you like to run OddlyFound development?"
 
-## Project principles
-- Preserve the original user request and approved requirements.
-- Prefer static pages and minimal client-side JavaScript.
-- Keep product/article content separate from presentation.
-- No cart, checkout, payments, accounts, inventory, or custom backend in the initial release unless separately approved.
-- No paid services, hidden recurring costs, scraping, unlicensed assets, or unsupported claims about prices without approval and verification.
-- Affiliate relationships must be disclosed clearly.
-- Never put secrets or private tokens in client-side code or source control.
-- Build accessible, responsive pages with real destinations and meaningful empty, error, loading, and success states where relevant.
-- Verify current platform limits and CMS authentication requirements before making deployment claims.
-- Report only tests and checks actually run. Distinguish Passed, Failed, Partial, and Not verified.
+- **A — Auto-Pilot:** Work through requirements, planning, implementation, testing, independent review, and final audit automatically. Make reasonable, low-risk decisions without asking me repeatedly. Record assumptions and decisions. Pause only for critical ambiguities, security or privacy risks, destructive operations, paid services, credentials, external commitments, or actions that explicitly require my authorization.
+- **B — Manual Approval:** Work in stages. Present the requirements specification and wait for my approval. Then present the implementation plan and wait for my approval before changing application code. Continue to respect any other necessary safety and authorization boundaries.
+
+Wait for my selection before proceeding.
+
+## Step 3 — Follow the selected mode
+
+### If I choose Auto-Pilot
+
+- Run all workflow stages in sequence: requirements analysis, planning, implementation, testing, independent code review, and final traceability audit.
+- Do not stop for routine decisions or require approval at every stage.
+- Use the requirements and planning stages internally to establish a clear specification and implementation plan before coding.
+- Preserve the smallest complete solution, existing project conventions, security, accessibility, maintainability, and test coverage.
+- Keep OddlyFound focused on product discovery, affiliate marketing, editorial content, and its CMS.
+- Preserve the zero/minimal recurring-cost objective. Do not purchase services, incur costs, expose secrets, deploy publicly, or perform other consequential external actions without explicit authorization.
+- If a critical ambiguity cannot be resolved safely, ask one focused question and pause only the affected work.
+- Report assumptions and decisions, files changed, tests actually run, review findings, and anything incomplete or unverified.
+
+### If I choose Manual Approval
+
+- Complete requirements analysis and present a draft specification. Do not modify application code until I explicitly approve the specification.
+- After approval, inspect the repository and prepare a detailed, file-by-file implementation plan. Do not modify application code until I explicitly approve that plan.
+- Then implement, test, review, and audit the work in sequence.
+
+## Rules for both modes
+
+- Never claim to have loaded an agent or skill, run a test, or completed a check unless that actually happened.
+- Do not install dependencies, commit, push, or deploy unless the selected workflow and my authorization permit it.
+- Do not scrape merchant sites or assume permission to reuse product images, copy, or prices.
+- Do not present prices as live unless they are reliably verified.
+- Prefer minimal dependencies and focused changes.
+- Be concise and report failures honestly.
+
+**Start now by initializing the required instructions, then ask me to choose A or B. Do not begin the development workflow until I choose.**

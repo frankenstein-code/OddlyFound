@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  product: CollectionEntry<"products">;
+  categoryName: string;
+}
+
+const { product, categoryName } = Astro.props;
+const searchText = [
+  product.data.name,
+  product.data.description,
+  categoryName,
+  ...product.data.tags,
+].join(" ");
+---
+
+<li
+  class="discovery-card overflow-hidden"
+  data-discovery-item
+  data-search-text={searchText}
+  data-category={product.data.category.id}
+>
+  <a class="group block h-full text-ink no-underline" href={`/products/${product.id}/`}>
+    {product.data.image && (
+      <img
+        class="aspect-[4/3] w-full object-cover"
+        src={product.data.image}
+        alt={product.data.imageAlt ?? ""}
+        loading="lazy"
+        decoding="async"
+      />
+    )}
+    <div class="space-y-2 p-5">
+      <p class="category-eyebrow text-sm font-bold uppercase tracking-wide">{categoryName}</p>
+      <h2 class="text-xl font-semibold group-hover:underline">{product.data.name}</h2>
+      <p class="text-muted">{product.data.description}</p>
+    </div>
+  </a>
+</li>

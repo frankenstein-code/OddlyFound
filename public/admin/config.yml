@@ -1,0 +1,137 @@
+backend:
+  name: github
+  repo: frankenstein-code/OddlyFound
+  branch: main
+
+locale: en
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: categories
+    label: Categories
+    folder: src/content/categories
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { name: name, label: Name, widget: string }
+      - { name: description, label: Description, widget: text }
+      - { name: draft, label: Draft, widget: boolean, default: true, required: false }
+
+  - name: products
+    label: Products
+    folder: src/content/products
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { name: name, label: Name, widget: string }
+      - { name: description, label: Short description, widget: text }
+      - { name: image, label: Image, widget: image, required: false }
+      - { name: imageAlt, label: Image alternative text, widget: string, required: false }
+      - { name: imageSource, label: Image source and usage rights, widget: string, required: false }
+      - name: category
+        label: Category
+        widget: relation
+        collection: categories
+        search_fields: [name]
+        value_field: "{{slug}}"
+        display_fields: [name]
+      - { name: tags, label: Tags, widget: list, field: { name: tag, label: Tag, widget: string }, required: false }
+      - { name: price, label: Editorially noted price, widget: number, value_type: float, required: false }
+      - { name: currency, label: Currency code, widget: string, required: false }
+      - { name: priceAsOf, label: Price noted on, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false }
+      - { name: affiliateUrl, label: Affiliate destination (HTTPS), widget: string, required: false }
+      - { name: merchant, label: Merchant or brand, widget: string, required: false }
+      - { name: featured, label: Featured on homepage, widget: boolean, default: false, required: false }
+      - { name: pros, label: What stands out, widget: list, field: { name: point, label: Point, widget: string }, required: false }
+      - { name: cons, label: Things to consider, widget: list, field: { name: point, label: Point, widget: string }, required: false }
+      - { name: editorialNotes, label: Editorial notes, widget: text, required: false }
+      - { name: draft, label: Draft, widget: boolean, default: true, required: false }
+
+  - name: collections
+    label: Collections
+    folder: src/content/collections
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Description, widget: text }
+      - name: products
+        label: Products
+        widget: relation
+        collection: products
+        search_fields: [name]
+        value_field: "{{slug}}"
+        display_fields: [name]
+        multiple: true
+        required: false
+      - name: category
+        label: Category
+        widget: relation
+        collection: categories
+        search_fields: [name]
+        value_field: "{{slug}}"
+        display_fields: [name]
+        required: false
+      - { name: image, label: Image, widget: image, required: false }
+      - { name: imageAlt, label: Image alternative text, widget: string, required: false }
+      - { name: imageSource, label: Image source and usage rights, widget: string, required: false }
+      - { name: featured, label: Featured on homepage, widget: boolean, default: false, required: false }
+      - { name: draft, label: Draft, widget: boolean, default: true, required: false }
+
+  - name: articles
+    label: Articles
+    folder: src/content/articles
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Description, widget: text }
+      - { name: image, label: Image, widget: image, required: false }
+      - { name: imageAlt, label: Image alternative text, widget: string, required: false }
+      - { name: imageSource, label: Image source and usage rights, widget: string, required: false }
+      - name: categories
+        label: Categories
+        widget: relation
+        collection: categories
+        search_fields: [name]
+        value_field: "{{slug}}"
+        display_fields: [name]
+        multiple: true
+        required: false
+      - { name: tags, label: Tags, widget: list, field: { name: tag, label: Tag, widget: string }, required: false }
+      - { name: author, label: Author, widget: string }
+      - { name: publishedAt, label: Publication date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false }
+      - { name: updatedAt, label: Updated date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false }
+      - { name: seoTitle, label: SEO title, widget: string, required: false }
+      - { name: seoDescription, label: SEO description, widget: text, required: false }
+      - name: relatedProducts
+        label: Related products
+        widget: relation
+        collection: products
+        search_fields: [name]
+        value_field: "{{slug}}"
+        display_fields: [name]
+        multiple: true
+        required: false
+      - { name: draft, label: Draft, widget: boolean, default: true, required: false }
+      - { name: body, label: Article, widget: markdown }
+
+  - name: site-settings
+    label: Site settings
+    files:
+      - name: site
+        label: Brand and affiliate disclosure
+        file: src/data/site.json
+        fields:
+          - { name: name, label: Site name, widget: string }
+          - { name: tagline, label: Tagline, widget: string }
+          - { name: affiliateDisclosure, label: Approved affiliate disclosure wording, widget: text, required: true }
