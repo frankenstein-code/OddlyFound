@@ -1,7 +1,7 @@
 ---
 name: TEST
 description: tESET
-image: /images/uploads/oddlyfound-peeking-mascot-logo.png
+image: ""
 category: map-draft-true-name-gadgets-description-abc
 featured: false
 draft: true
