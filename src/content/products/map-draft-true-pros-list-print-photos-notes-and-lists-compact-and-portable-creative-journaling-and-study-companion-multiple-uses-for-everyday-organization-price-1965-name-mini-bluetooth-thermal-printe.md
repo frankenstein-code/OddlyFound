@@ -9,8 +9,8 @@ description: >-
 
   Discover your next unexpected find at OddlyFound.
 image: /images/uploads/63922.jpg
-imageAlt: Mint-green and white compact SEZNIK thermal printer with paper rolls
-  and printed examples.
+imageAlt: Mint-green and white compact SEZNIK thermal printer with paperolls and
+  printed examples.
 category: map-draft-true-name-gadgets-description-abc
 tags:
   - mini-printer
@@ -29,5 +29,5 @@ editorialNotes: Featured first product for OddlyFound. Position it as a fun,
   practical gadget for students, journal lovers, and creative people. Emphasize
   everyday uses and visual appeal. Verify product specifications, current price,
   and affiliate link before publishing.
-draft: true
+draft: false
 ---
