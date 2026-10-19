@@ -29,5 +29,5 @@ editorialNotes: Featured first product for OddlyFound. Position it as a fun,
   practical gadget for students, journal lovers, and creative people. Emphasize
   everyday uses and visual appeal. Verify product specifications, current price,
   and affiliate link before publishing.
-draft: false
+draft: true
 ---
